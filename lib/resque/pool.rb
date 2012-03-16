@@ -158,7 +158,7 @@ module Resque
         load_config
         Logging.reopen_logs!
         log "HUP: gracefully shutdown old children (which have old logfiles open)"
-        signal_all_workers(:QUIT)
+        signal_all_workers(:WINCH)
         log "HUP: new children will inherit new logfiles"
         maintain_worker_count
       when :WINCH
@@ -167,12 +167,12 @@ module Resque
         maintain_worker_count
       when :QUIT
         log "QUIT: graceful shutdown, waiting for children"
-        signal_all_workers(:QUIT)
+        signal_all_workers(:WINCH)
         reap_all_workers(0) # will hang until all workers are shutdown
         :break
       when :INT
         log "INT: immediate shutdown (graceful worker shutdown)"
-        signal_all_workers(:QUIT)
+        signal_all_workers(:WINCH)
         :break
       when :TERM
         log "TERM: immediate shutdown (and immediate worker shutdown)"
